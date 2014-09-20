@@ -1,4 +1,5 @@
-#include "common.h"
+#include <Keypad.h>
+#include "pins.h"
 
 const byte ROWS = 4;
 const byte COLS = 4; 
@@ -18,11 +19,11 @@ byte colPins[COLS] = { PIN_KEY_COL_0, PIN_KEY_COL_1, PIN_KEY_COL_2, PIN_KEY_COL_
 // Create the Keypad
 Keypad k( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 
-// questo è da considerare una variabile globale poiche e qui in cima
+// variabile di stato (globale) per l'input da tastiera di valori numerici
 int num = 0;
 
 // si imposta una struttura a stati per identificare che tipo di tasto è premuto (num., lettera, etc) per programmarne il comportamento. 
-// Tutta la logica di tastierra, variabili comprese dovrebbe essere gestita qui. 
+// Tutta la logica di tastiera, variabili comprese dovrebbe essere gestita qui. 
 
 void GestisciTastiera()
 {

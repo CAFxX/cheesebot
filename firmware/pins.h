@@ -1,7 +1,5 @@
-// questo header contiene le dichiarazioni comuni
-
-#ifndef COMMON
-#define COMMON
+#ifndef PINS_H
+#define PINS_H 1
 
 #define PIN_DHT       A1  // pin dati del sensore DHT
 #define PIN_RELAY     13  // output pin verso il relay del frigorifero
@@ -14,8 +12,11 @@
 #define PIN_KEY_COL_1 4   //
 #define PIN_KEY_COL_2 3   //
 #define PIN_KEY_COL_3 2   //
+#define PIN_LCD_0     6   // pin dello schermo (display.ino)
+#define PIN_LCD_1     7   //
+#define PIN_LCD_2     8   //
+#define PIN_LCD_3     9   //
+#define PIN_LCD_4     10  //
+#define PIN_LCD_5     11  //
 
-// enum: definisce tipo variabile che puo avere dei valori solo presenti nei parametri enumerati in parentesi.
-enum stato_t { STATO_0, MODIFICA_UMID, MODIFICA_TEMP };
-
-#endif // COMMON
+#endif // PINS_H

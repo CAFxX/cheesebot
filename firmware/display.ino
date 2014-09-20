@@ -1,7 +1,8 @@
-#include "CAC_2.h"
+#include <LiquidCrystal.h>
+#include "pins.h"
 
 // definisco a quali pin è connesso il display
-LiquidCrystal lcd(6, 7, 8, 9, 10, 11);
+LiquidCrystal lcd(PIN_LCD_0, PIN_LCD_1, PIN_LCD_2, PIN_LCD_3, PIN_LCD_4, PIN_LCD_5);
 
 // in un sottomodulo non si vedono direttamente variabili globali definite in altri sottomoduli
 // per poterlo fare, bisogna dichiarare la variabile a cui si vuole accedere come extern 

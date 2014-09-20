@@ -1,22 +1,22 @@
-#include <Keypad.h>
-#include <DHT11.h>
-#include <LiquidCrystal.h>
-#include "CAC_2.h"
+#include "pins.h"
 
-// definisco il pin del sensore temperatura cavo 3
-#define DHTPIN A1
-// definisco il tipo di sensore
-#define DHTTYPE DHT11
-DHT11 dht11(DHTPIN);
-//(DHTPIN, DHTTYPE);
+// stati dell'utente
+enum stato_t { 
+  STATO_0,       // nessuna modifica in corso
+  MODIFICA_UMID, // utente sta modificando l'umidita'
+  MODIFICA_TEMP  // utente sta modificando la temperatura
+};
 
-// definisco che il pin 13 è quello a cui è connesso relay (frigorifero)
-#define PIN_RELAY 13
-// definisco che il pin 12 è quello a cui è connessa la ventola
-#define PIN_FAN 12
-
-int t, h;  //variabili misurate
-int tt, th;  //variabili target
+// VARIABILI DI STATO
+int t;                   // temperatura misurata dal sensore 
+int h;                   // umidita' misurata dal sensore
+int tt;                  // temperatura target impostata dall'utente
+int th;                  // umidita' target impostata dall'utente
+bool relay_on = false;   // true se il relay e' attivo
+bool fan_on = false;     // true se la ventola e' attiva
+long relay_switch_t = 0; // ultimo switch di stato del pin del relay
+long fan_switch_t = 0;   // ultimo switch di stato del pin della ventola
+stato_t stato = STATO_0; // stato dell'interfaccia utente
 
 void setup() {
   Serial.begin(9600);
@@ -26,41 +26,25 @@ void setup() {
 }
 
 void loop() {
-  // gestisci gli input dall'utente
-  GestisciTastiera();
+  GestisciTastiera(); // gestisci gli input dall'utente
+  GestisciSensore(); // legge i dati dal sensore DHT
   
-  // leggi i valori dal sensore
-  float _h, _t;
-  int res = dht11.read(_h, _t);
-  int __h = (int)_h, __t = (int)_t;
-  if (res == 0 && (h != __h || t != __t)) {
-    h = __h;
-    t = __t;
-    AggiornaDisplaySensore(t, h);
+  long curr_t = millis();
+  
+  bool relay_required = t > tt;
+  if (relay_required != relay_on && curr_t - relay_switch_t > RELAY_MIN_SWITCH_T) {
+    relay_on = relay_required;
+    relay_switch_t = curr_t;
+    digitalWrite(PIN_RELAY, relay_on ? HIGH : LOW);
+    AggiornaDisplayRelayTemp(relay_on ? 1 : 0);    
   }
   
-  // attiva/disattiva il relay della presa (frigorifero)
-  if (t < tt) {
-    // spengo il frigo
-    digitalWrite(PIN_RELAY, LOW);
-    AggiornaDisplayRelayTemp(0);
-  } else {
-    // accendo il frigo
-    digitalWrite(PIN_RELAY, HIGH);
-    AggiornaDisplayRelayTemp(1);
+  bool fan_required = h > th;
+  if (fan_required != fan_on && curr_t - fan_switch_t > FAN_MIN_SWITCH_T) {
+    fan_on = fan_required;
+    fan_switch_t = curr_t;
+    digitalWrite(PIN_FAN, fan_on ? HIGH : LOW);
+    AggiornaDisplayRelayTemp(fan_on ? 1 : 0);    
   }
-
-  // attiva/disattiva la ventola 
-  if (h < th) {
-    // spengo la ventola
-    digitalWrite(PIN_FAN, LOW);
-    AggiornaDisplayRelayHumi(0);
-  } else {
-    // accendo la ventola
-    digitalWrite(PIN_FAN, HIGH);
-    AggiornaDisplayRelayHumi(1);
-  }
-
-}    
-
-
+  
+}
