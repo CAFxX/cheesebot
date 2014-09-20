@@ -34,8 +34,8 @@ void GestisciTastiera()
   switch (key1)
   {
   default: // il default rende piu chiaro il codice.
-    case NO_KEY:
-      break;
+  case NO_KEY:
+    break;
 
   case 'A':
     switch (stato) {

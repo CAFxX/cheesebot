@@ -23,6 +23,7 @@ stato_t stato = STATO_0;      // stato dell'interfaccia utente
 
 void setup() {
   InizializzaDisplay();
+  InizializzaSensore();
   pinMode(PIN_RELAY, OUTPUT);
   pinMode(PIN_FAN, OUTPUT);
   ResetSwitchTimes();
@@ -51,7 +52,7 @@ void loop() {
     fan_on = fan_required;
     fan_switch_t = curr_t;
     digitalWrite(PIN_FAN, fan_on ? HIGH : LOW);
-    AggiornaDisplayRelayTemp(fan_on ? 1 : 0);    
+    AggiornaDisplayRelayHumi(fan_on ? 1 : 0);    
   }
 }
 
