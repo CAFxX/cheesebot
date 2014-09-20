@@ -1,11 +1,13 @@
 #include <Keypad.h>
 #include "pins.h"
 
-const byte ROWS = 4;
-const byte COLS = 4; 
+#define KEY_ROWS 4
+#define KEY_COLS 4 
+
+// TODO: move keys, rowPins and colPins in FLASH
 
 // Define the Keymap
-char keys[ROWS][COLS] = {
+const char keys[KEY_ROWS][KEY_COLS] = {
   {  '1','2','3','A'  },
   {  '4','5','6','B'  },
   {  '7','8','9','C'  },
@@ -13,20 +15,20 @@ char keys[ROWS][COLS] = {
 };
 
 // pin della tastiera
-byte rowPins[ROWS] = { PIN_KEY_ROW_0, PIN_KEY_ROW_1, PIN_KEY_ROW_2, PIN_KEY_ROW_3 };
-byte colPins[COLS] = { PIN_KEY_COL_0, PIN_KEY_COL_1, PIN_KEY_COL_2, PIN_KEY_COL_3 }; 
+byte rowPins[KEY_ROWS] = { PIN_KEY_ROW_0, PIN_KEY_ROW_1, PIN_KEY_ROW_2, PIN_KEY_ROW_3 };
+byte colPins[KEY_COLS] = { PIN_KEY_COL_0, PIN_KEY_COL_1, PIN_KEY_COL_2, PIN_KEY_COL_3 }; 
 
 // Create the Keypad
-Keypad k( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
-
-// variabile di stato (globale) per l'input da tastiera di valori numerici
-int num = 0;
+Keypad k( makeKeymap(keys), rowPins, colPins, KEY_ROWS, KEY_COLS );
 
 // si imposta una struttura a stati per identificare che tipo di tasto è premuto (num., lettera, etc) per programmarne il comportamento. 
 // Tutta la logica di tastiera, variabili comprese dovrebbe essere gestita qui. 
 
 void GestisciTastiera()
 {
+  // variabile di stato (non globale) per l'input da tastiera di valori numerici
+  static int num = 0;
+  
   // legge 
   char key1 = k.getKey(); // leggi
   switch (key1)
@@ -42,7 +44,7 @@ void GestisciTastiera()
     }
     stato = MODIFICA_TEMP;
     num = tt;
-    AggiornaDisplayStato(stato);
+    AggiornaDisplayStato();
     break;
     
   case 'B':
@@ -52,7 +54,7 @@ void GestisciTastiera()
     }
     stato = MODIFICA_UMID;
     num = th;
-    AggiornaDisplayStato(stato);
+    AggiornaDisplayStato();
     break;
     
   case '0': 
@@ -65,10 +67,7 @@ void GestisciTastiera()
   case '7': 
   case '8': 
   case '9':
-    if (stato == STATO_0)
-      break;
-    
-    // questo serve a costruire il numero a due cifre
+    // interpreta la cifra premuta e aggiorna il display a due cifre
     num = ( num * 10 + (key1 - '0') ) % 100;
     
     switch (stato) {
@@ -79,11 +78,14 @@ void GestisciTastiera()
 
   case '#':
     switch (stato) {
+      case STATO_0:       return;
       case MODIFICA_TEMP: tt = num; break;
       case MODIFICA_UMID: th = num; break;
     }
     stato = STATO_0;
-    AggiornaDisplayStato(stato);
+    AggiornaDisplayStato();
+    ResetSwitchTimes(); 
     break;
+    
   }
 }
