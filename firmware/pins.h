@@ -1,7 +1,8 @@
 #ifndef PINS_H
 #define PINS_H 1
 
-#define PIN_DHT       A1  // pin dati del sensore DHT
+#define PIN_DHT_INT   A1  // pin dati del sensore DHT interno
+#define PIN_DHT_EXT   A0  // pin dati del sensore DHT esterno
 #define PIN_RELAY     13  // output pin verso il relay del frigorifero
 #define PIN_FAN       12  // output pin verso il relay della ventola
 #define PIN_KEY_ROW_0 A5  // pin della tastiera (keyboard.ino)
