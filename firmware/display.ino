@@ -1,4 +1,5 @@
 #include <LiquidCrystal.h>
+#include <avr/pgmspace.h>
 #include "pins.h"
 
 extern stato_t stato;
@@ -6,7 +7,13 @@ extern stato_t stato;
 // definisco a quali pin è connesso il display
 LiquidCrystal lcd(PIN_LCD_0, PIN_LCD_1, PIN_LCD_2, PIN_LCD_3, PIN_LCD_4, PIN_LCD_5);
 
-void AggiornaDisplayStringa(int c, int r, char *str) {
+void AggiornaDisplayPSTR(int c, int r, const char* PROGMEM progmem_str) {
+  char str[16+1];
+  strlcpy_P(str, progmem_str, sizeof(str));
+  AggiornaDisplayStringa(c, r, str);
+}
+
+void AggiornaDisplayStringa(int c, int r, const char *str) {
   lcd.setCursor(c, r);
   lcd.print(str);
 }
@@ -76,8 +83,8 @@ void AggiornaDisplayStato() {
 void InizializzaDisplay() {
   lcd.begin(16, 2);
     
-  AggiornaDisplayStringa(0, 0, "A-Temp");
-  AggiornaDisplayStringa(0, 1, "B-Humi");
+  AggiornaDisplayPSTR(0, 0, PSTR("A-Temp"));
+  AggiornaDisplayPSTR(0, 1, PSTR("B-Humi"));
   AggiornaDisplayCarattere(10, 0, 0x7E); // freccia
   AggiornaDisplayCarattere(10, 1, 0x7E); // freccia
 
